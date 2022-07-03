@@ -179,6 +179,7 @@ class AutoprogramDirective(Directive):
         "strip_usage": unchanged,
         "no_usage_codeblock": unchanged,
         "groups": unchanged,
+        "no_title": unchanged,
     }
 
     def make_rst(self):
@@ -193,6 +194,7 @@ class AutoprogramDirective(Directive):
         usage_codeblock = "no_usage_codeblock" not in self.options
         maxdepth = int(self.options.get("maxdepth", 0))
         groups = "groups" in self.options
+        no_title = "no_title" in self.options
 
         if start_command[0] == "":
             start_command.pop(0)
@@ -248,6 +250,7 @@ class AutoprogramDirective(Directive):
                 usage_strip=strip_usage,
                 usage_codeblock=usage_codeblock,
                 epilog=epilog,
+                no_title=no_title,
             ):
                 yield line
 
@@ -271,6 +274,7 @@ def render_rst(
     usage_strip: bool,
     usage_codeblock: bool,
     epilog: Optional[str],
+    no_title: bool,
 ) -> Iterable[str]:
     if usage_strip:
         to_strip = title.rsplit(" ", 1)[0]
@@ -287,12 +291,17 @@ def render_rst(
     yield ""
 
     if is_program:
-        yield ".. program:: " + title
-        yield ""
+        if no_title:
+            yield f".. program:: " + title
+            yield ""
 
-    yield title
-    yield ("!" if is_subgroup else "?") * len(title)
-    yield ""
+        elif title:
+            yield ".. program:: " + title
+            yield ""
+
+            yield title
+            yield ("!" if is_subgroup else "?") * len(title)
+            yield ""
 
     for line in inspect.cleandoc(description or "").splitlines():
         yield line
@@ -526,15 +535,15 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
         sample_prog_path = os.path.join(os.path.dirname(__file__), "..", "doc")
         sys.path.insert(0, sample_prog_path)
         self.directive = AutoprogramDirective(
-            "autoprogram",
-            ["cli:parser"],
-            {"prog": "cli.py"},
-            StringList([], items=[]),
-            1,
-            0,
-            ".. autoprogram:: cli:parser\n   :prog: cli.py\n",
-            None,
-            None,
+            name="autoprogram",
+            arguments=["cli:parser"],
+            options={"prog": "cli.py"},
+            content=StringList([], items=[]),
+            lineno=1,
+            content_offset=0,
+            block_text=".. autoprogram:: cli:parser\n   :prog: cli.py\n",
+            state=None,
+            state_machine=None,
         )
 
     def tearDown(self) -> None:
@@ -574,6 +583,37 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             """).strip()
         )
 
+    def test_no_title(self):
+        self.directive.options["no_title"] = True
+        self.assertEqual(
+            "\n".join(self.directive.make_rst()).strip(),
+            inspect.cleandoc(
+            """
+            .. program:: cli.py
+
+            Process some integers.
+
+            .. code-block:: console
+
+               usage: cli.py [-h] [-i IDENTITY] [--sum] N [N ...]
+
+            .. option:: n
+
+               An integer for the accumulator.
+
+            .. option:: -h, --help
+
+               show this help message and exit
+
+            .. option:: -i <identity>, --identity <identity>
+
+               the default result for no arguments (default: 0)
+
+            .. option:: --sum
+
+               Sum the integers (default: find the max).
+            """).strip()
+        )
 
 
 class UtilTestCase(unittest.TestCase):
