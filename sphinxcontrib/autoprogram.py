@@ -181,6 +181,7 @@ class AutoprogramDirective(Directive):
         "groups": unchanged,
         "no_title": unchanged,
         "custom_title": unchanged,
+        "no_description": unchanged,
     }
 
     def make_rst(self):
@@ -197,6 +198,7 @@ class AutoprogramDirective(Directive):
         groups = "groups" in self.options
         no_title = "no_title" in self.options
         custom_title = self.options.get("custom_title", "")
+        no_description = "no_description" in self.options
 
         if start_command[0] == "":
             start_command.pop(0)
@@ -254,6 +256,7 @@ class AutoprogramDirective(Directive):
                 epilog=epilog,
                 no_title=no_title,
                 custom_title=custom_title,
+                no_description=no_description,
             ):
                 yield line
 
@@ -279,6 +282,7 @@ def render_rst(
     epilog: Optional[str],
     no_title: bool,
     custom_title: Optional[str],
+    no_description: bool,
 ) -> Iterable[str]:
     if usage_strip:
         to_strip = title.rsplit(" ", 1)[0]
@@ -313,10 +317,13 @@ def render_rst(
             yield title
             yield ("!" if is_subgroup else "?") * len(title)
             yield ""
-
-    for line in inspect.cleandoc(description or "").splitlines():
-        yield line
-    yield ""
+    if no_description:
+        pass
+    else:
+        for line in inspect.cleandoc(description or "").splitlines():
+            yield line
+            print(line)
+        yield ""
 
     if usage is None:
         pass
@@ -639,6 +646,39 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             .. program:: cli.py
 
             Process some integers.
+
+            .. code-block:: console
+
+               usage: cli.py [-h] [-i IDENTITY] [--sum] N [N ...]
+
+            .. option:: n
+
+               An integer for the accumulator.
+
+            .. option:: -h, --help
+
+               show this help message and exit
+
+            .. option:: -i <identity>, --identity <identity>
+
+               the default result for no arguments (default: 0)
+
+            .. option:: --sum
+
+               Sum the integers (default: find the max).
+            """).strip()
+        )
+
+    def test_no_description(self) -> None:
+        self.directive.options["no_description"] = True
+        self.assertEqual(
+            "\n".join(self.directive.make_rst()).strip(),
+            inspect.cleandoc(
+            """
+            .. program:: cli.py
+
+            cli.py
+            ??????
 
             .. code-block:: console
 
