@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 
 # Do not change the variable name.  It's parsed by doc/conf.py script.
-version = "0.1.7"
+version = "0.1.7.1"
 
 requires = ["Sphinx >= 1.2", "six", "docutils<0.19"]
 
