@@ -162,7 +162,7 @@ def import_object(import_name: str):
             raise
 
     mod = reduce(getattr, module_name.split(".")[1:], mod)
-    globals_: Dict[str, Any] = builtins  # type: ignore[assignment]
+    globals_: Dict[str, Any] = builtins
     if not isinstance(globals_, dict):
         globals_ = globals_.__dict__
     return eval(expr, globals_, mod.__dict__)
