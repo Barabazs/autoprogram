@@ -579,7 +579,7 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
         self.assertEqual(
             "\n".join(self.directive.make_rst()).strip(),
             inspect.cleandoc(
-            """
+                """
             .. program:: cli.py
 
             cli.py
@@ -606,7 +606,8 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             .. option:: --sum
 
                Sum the integers (default: find the max).
-            """).strip()
+            """
+            ).strip(),
         )
 
     def test_custom_title(self):
@@ -614,7 +615,7 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
         self.assertEqual(
             "\n".join(self.directive.make_rst()).strip(),
             inspect.cleandoc(
-            """
+                """
             .. program:: cli.py
 
             Custom Title
@@ -641,16 +642,16 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             .. option:: --sum
 
                Sum the integers (default: find the max).
-            """).strip()
+            """
+            ).strip(),
         )
-
 
     def test_no_title(self):
         self.directive.options["no_title"] = True
         self.assertEqual(
             "\n".join(self.directive.make_rst()).strip(),
             inspect.cleandoc(
-            """
+                """
             .. program:: cli.py
 
             Process some integers.
@@ -674,7 +675,8 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             .. option:: --sum
 
                Sum the integers (default: find the max).
-            """).strip()
+            """
+            ).strip(),
         )
 
     def test_no_description(self) -> None:
@@ -682,7 +684,7 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
         self.assertEqual(
             "\n".join(self.directive.make_rst()).strip(),
             inspect.cleandoc(
-            """
+                """
             .. program:: cli.py
 
             cli.py
@@ -707,7 +709,8 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             .. option:: --sum
 
                Sum the integers (default: find the max).
-            """).strip()
+            """
+            ).strip(),
         )
 
 
