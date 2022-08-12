@@ -313,7 +313,7 @@ def render_rst(
             ) * len(custom_title)
             yield ""
         elif no_title:
-            yield f".. program:: " + title
+            yield ".. program:: " + title
             yield ""
 
         elif title:
@@ -511,7 +511,11 @@ class ScannerTestCase(unittest.TestCase):
         # section: default optionals
         program, options, group = sections[1]
         self.assertEqual([], program)
-        self.assertEqual("optional arguments", group.title)
+        # See https://github.com/sphinx-contrib/autoprogram/issues/24
+        if sys.version_info >= (3, 10):
+            self.assertEqual("options", group.title)
+        else:
+            self.assertEqual("optional arguments", group.title)
         self.assertEqual(None, group.description)
         self.assertEqual(2, len(options))
         self.assertEqual(
