@@ -13,7 +13,7 @@
    :target: https://github.com/sphinx-contrib/autoprogram/actions
    :alt: Build Status
 
-This contrib extension, ``sphinxcontrib.autoprogram``, provides an automated
+This is a modified fork of the contrib extension, ``sphinxcontrib.autoprogram``, which provides an automated
 way to document CLI programs.  It scans ``argparse.ArgumentParser`` object,
 and then expands it into a set of ``.. program::`` and ``.. option::``
 directives.
@@ -22,7 +22,7 @@ Install using ``pip``:
 
 .. code-block:: console
 
-   $ pip install sphinxcontrib-autoprogram
+   $ pip install git+https://github.com/barabazs/autoprogram.git@master 
 
 You can find the documentation from the following URL:
 
