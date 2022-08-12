@@ -182,6 +182,7 @@ class AutoprogramDirective(Directive):
         "no_title": unchanged,
         "custom_title": unchanged,
         "no_description": unchanged,
+        "custom_underline": unchanged,
     }
 
     def make_rst(self):
@@ -199,6 +200,7 @@ class AutoprogramDirective(Directive):
         no_title = "no_title" in self.options
         custom_title = self.options.get("custom_title", "")
         no_description = "no_description" in self.options
+        custom_underline = self.options.get("custom_underline", "")
 
         if start_command[0] == "":
             start_command.pop(0)
@@ -257,6 +259,7 @@ class AutoprogramDirective(Directive):
                 no_title=no_title,
                 custom_title=custom_title,
                 no_description=no_description,
+                custom_underline=custom_underline,
             ):
                 yield line
 
@@ -283,6 +286,7 @@ def render_rst(
     no_title: bool,
     custom_title: Optional[str],
     no_description: bool,
+    custom_underline: Optional[str],
 ) -> Iterable[str]:
     if usage_strip:
         to_strip = title.rsplit(" ", 1)[0]
@@ -304,7 +308,9 @@ def render_rst(
             yield ""
 
             yield custom_title
-            yield ("!" if is_subgroup else "?") * len(custom_title)
+            yield (
+                "!" if is_subgroup else custom_underline if custom_underline else "?"
+            ) * len(custom_title)
             yield ""
         elif no_title:
             yield f".. program:: " + title
@@ -315,7 +321,9 @@ def render_rst(
             yield ""
 
             yield title
-            yield ("!" if is_subgroup else "?") * len(title)
+            yield (
+                "!" if is_subgroup else custom_underline if custom_underline else "?"
+            ) * len(title)
             yield ""
     if no_description:
         pass
