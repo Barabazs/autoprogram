@@ -717,6 +717,115 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             ).strip(),
         )
 
+    def test_custom_underline(self) -> None:
+        with self.subTest("Perform regular test"):
+            self.directive.options["custom_underline"] = "="
+            self.assertEqual(
+                "\n".join(self.directive.make_rst()).strip(),
+                inspect.cleandoc(
+                    """
+            .. program:: cli.py
+
+            cli.py
+            ======
+
+            Process some integers.
+
+            .. code-block:: console
+
+               usage: cli.py [-h] [-i IDENTITY] [--sum] N [N ...]
+
+            .. option:: n
+
+               An integer for the accumulator.
+
+            .. option:: -h, --help
+
+               show this help message and exit
+
+            .. option:: -i <identity>, --identity <identity>
+
+               the default result for no arguments (default: 0)
+
+            .. option:: --sum
+
+               Sum the integers (default: find the max).
+            """
+                ).strip(),
+            )
+
+            self.directive.options["custom_underline"] = "-"
+            self.assertEqual(
+                "\n".join(self.directive.make_rst()).strip(),
+                inspect.cleandoc(
+                    """
+            .. program:: cli.py
+
+            cli.py
+            ------
+
+            Process some integers.
+
+            .. code-block:: console
+
+               usage: cli.py [-h] [-i IDENTITY] [--sum] N [N ...]
+
+            .. option:: n
+
+               An integer for the accumulator.
+
+            .. option:: -h, --help
+
+               show this help message and exit
+
+            .. option:: -i <identity>, --identity <identity>
+
+               the default result for no arguments (default: 0)
+
+            .. option:: --sum
+
+               Sum the integers (default: find the max).
+            """
+                ).strip(),
+            )
+
+        with self.subTest("Perform failing tests"):
+            self.directive.options["custom_underline"] = "^"
+
+            self.assertNotEqual(
+                "\n".join(self.directive.make_rst()).strip(),
+                inspect.cleandoc(
+                    """
+                .. program:: cli.py
+
+                cli.py
+                ======
+
+                Process some integers.
+
+                .. code-block:: console
+
+                usage: cli.py [-h] [-i IDENTITY] [--sum] N [N ...]
+
+                .. option:: n
+
+                An integer for the accumulator.
+
+                .. option:: -h, --help
+
+                show this help message and exit
+
+                .. option:: -i <identity>, --identity <identity>
+
+                the default result for no arguments (default: 0)
+
+                .. option:: --sum
+
+                Sum the integers (default: find the max).
+                """
+                ).strip(),
+            )
+
 
 class UtilTestCase(unittest.TestCase):
     def test_import_object(self) -> None:
